@@ -141,14 +141,16 @@ int main(int argc, char* argv[]) {
     // connect to client
  	// packet setup
     MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
+    
+    data.MQTTVersion = 3;
     data.clientID.cstring = "56a8d999-cfe5-47f9-b400-b9c0f027feaf";
     data.username.cstring = "xEQEPeDv2NaTHa1e5H9os9NsXMoS9sHS";
     //data.password.cstring = "r$vvvTWA3vB3B-GNCnw*QozO8_ZSN2V2";
 
-  
-    while(!client.isConnected()){
-    	client.connect(data);
-    }
+  	client.connect(data);
+    // while(!client.isConnected()){
+    // 	client.connect(data);
+    // }
 
  	
  
