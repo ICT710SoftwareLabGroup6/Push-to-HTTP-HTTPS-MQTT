@@ -124,7 +124,7 @@ int main(int argc, char* argv[]) {
 
     float version = 0.6;
 
-    char* topic = "mbed-sample";
+    char* topic = "@msg/to_me";
  
     pc.printf("HelloMQTT: version is %.2f\r\n", version);
  
@@ -141,7 +141,7 @@ int main(int argc, char* argv[]) {
     // connect to client
  	// packet setup
     MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
-    
+
     data.MQTTVersion = 3;
     data.clientID.cstring = "56a8d999-cfe5-47f9-b400-b9c0f027feaf";
     data.username.cstring = "xEQEPeDv2NaTHa1e5H9os9NsXMoS9sHS";
@@ -165,11 +165,17 @@ int main(int argc, char* argv[]) {
     message.payload = (void*)buf;
     message.payloadlen = strlen(buf)+1;
     rc = client.publish(topic, message);
-    while (arrivedcount < 1)
-        client.yield(100);
- 
-    //mqttNetwork.disconnect();
- 
-    pc.printf("Version %.2f: finish %d msgs\r\n", version, arrivedcount);
+    // QoS 1
+    sprintf(buf, "Hello World!  QoS 1 message from app version %f\r\n", version);
+    message.qos = MQTT::QOS1;
+    message.payloadlen = strlen(buf)+1;
+    rc = client.publish(topic, message);
+    // QoS 2
+    sprintf(buf, "Hello World!  QoS 2 message from app version %f\r\n", version);
+    message.qos = MQTT::QOS2;
+    message.payloadlen = strlen(buf)+1;
+    rc = client.publish(topic, message);
+
+    
  
 }
