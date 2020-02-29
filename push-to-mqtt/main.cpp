@@ -4,7 +4,7 @@
 #include "MQTTNetwork.h"
 #include "MQTTmbed.h"
 #include "MQTTClient.h"
-
+#include "MQTTClientMbedOs.h"
 
 int arrivedcount = 0;
 
@@ -127,36 +127,30 @@ int main(int argc, char* argv[]) {
     char* topic = "mbed-sample";
  
     pc.printf("HelloMQTT: version is %.2f\r\n", version);
-
-    MQTTNetwork mqttNetwork(wifi);
- 
-    MQTT::Client<MQTTNetwork, Countdown> client(mqttNetwork);
  
     const char* hostname = "mqtt.netpie.io";
-
     int port = 1883;
 
+    TCPSocket socket;
+    MQTTClient client(&socket);
+    socket.open(wifi);
+
+    int rc = socket.connect(hostname,port);
     pc.printf("Connecting to %s:%d\r\n", hostname, port);
 
-    int rc = mqttNetwork.connect(hostname, port);
-
-    if (rc != 0)
-
-        pc.printf("rc from TCP connect is %d\r\n", rc);
- 
+    // connect to client
+ 	// packet setup
     MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
-
-    data.MQTTVersion = 3;
-
     data.clientID.cstring = "56a8d999-cfe5-47f9-b400-b9c0f027feaf";
     data.username.cstring = "xEQEPeDv2NaTHa1e5H9os9NsXMoS9sHS";
-    data.password.cstring = "r$vvvTWA3vB3B-GNCnw*QozO8_ZSN2V2";
+    //data.password.cstring = "r$vvvTWA3vB3B-GNCnw*QozO8_ZSN2V2";
 
-    if ((rc = client.connect(data)) != 0)
-        pc.printf("rc from MQTT connect is %d\r\n", rc);
- 
-    if ((rc = client.subscribe(topic, MQTT::QOS2, messageArrived)) != 0)
-        pc.printf("rc from MQTT subscribe is %d\r\n", rc);
+  
+    while(!client.isConnected()){
+    	client.connect(data);
+    }
+
+ 	
  
     MQTT::Message message;
  
@@ -172,29 +166,7 @@ int main(int argc, char* argv[]) {
     while (arrivedcount < 1)
         client.yield(100);
  
-    // QoS 1
-    sprintf(buf, "Hello World!  QoS 1 message from app version %f\r\n", version);
-    message.qos = MQTT::QOS1;
-    message.payloadlen = strlen(buf)+1;
-    rc = client.publish(topic, message);
-    while (arrivedcount < 2)
-        client.yield(100);
- 
-    // QoS 2
-    sprintf(buf, "Hello World!  QoS 2 message from app version %f\r\n", version);
-    message.qos = MQTT::QOS2;
-    message.payloadlen = strlen(buf)+1;
-    rc = client.publish(topic, message);
-    while (arrivedcount < 3)
-        client.yield(100);
- 
-    if ((rc = client.unsubscribe(topic)) != 0)
-        pc.printf("rc from unsubscribe was %d\r\n", rc);
- 
-    if ((rc = client.disconnect()) != 0)
-        pc.printf("rc from disconnect was %d\r\n", rc);
- 
-    mqttNetwork.disconnect();
+    //mqttNetwork.disconnect();
  
     pc.printf("Version %.2f: finish %d msgs\r\n", version, arrivedcount);
  
