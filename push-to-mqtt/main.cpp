@@ -158,7 +158,7 @@ int main(int argc, char* argv[]) {
  
     // QoS 0
     char buf[100];
-    sprintf(buf, "Hello World!  QoS 0 message from app version %f\r\n", version);
+    sprintf(buf, "Hello P'Paully!  QoS 0 message from TeammyTeam");
     message.qos = MQTT::QOS0;
     message.retained = false;
     message.dup = false;
@@ -166,12 +166,12 @@ int main(int argc, char* argv[]) {
     message.payloadlen = strlen(buf)+1;
     rc = client.publish(topic, message);
     // QoS 1
-    sprintf(buf, "Hello World!  QoS 1 message from app version %f\r\n", version);
+    sprintf(buf, "Hello P'Paully!  QoS 1 message from TeammyTeam");
     message.qos = MQTT::QOS1;
     message.payloadlen = strlen(buf)+1;
     rc = client.publish(topic, message);
     // QoS 2
-    sprintf(buf, "Hello World!  QoS 2 message from app version %f\r\n", version);
+    sprintf(buf, "Hello P'Paully!  QoS 2 message from TeammyTeam");
     message.qos = MQTT::QOS2;
     message.payloadlen = strlen(buf)+1;
     rc = client.publish(topic, message);
